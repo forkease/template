@@ -1,0 +1,27 @@
+if ( NOT DEFINED M20PROJ )
+    message( FATAL_ERROR "M20PROJ is not defined" )
+endif( )
+
+set( CMAKE_CXX_STANDARD 20 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
+set( M20FACE_EXT ".ixx")
+set( M20IMPL_EXT ".mxx")
+
+file( GLOB_RECURSE M20FACES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*${M20FACE_EXT}" )
+file( GLOB_RECURSE M20IMPLS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*${M20IMPL_EXT}" )
+
+set_source_files_properties( ${M20FACES} PROPERTIES LANGUAGE CXX )
+set_source_files_properties( ${M20IMPLS} PROPERTIES LANGUAGE CXX )
+
+add_library( ${M20PROJ} )
+set_target_properties( ${M20PROJ} PROPERTIES LINKER_LANGUAGE CXX )
+target_compile_features( ${M20PROJ} PUBLIC cxx_std_20 )
+
+target_sources( ${M20PROJ} PUBLIC FILE_SET CXX_MODULES FILES ${M20FACES} )
+target_sources( ${M20PROJ} PRIVATE ${M20IMPLS} )
+
+if ( PROJECT_IS_TOP_LEVEL AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/temp" )
+    add_subdirectory( temp )
+endif( )
